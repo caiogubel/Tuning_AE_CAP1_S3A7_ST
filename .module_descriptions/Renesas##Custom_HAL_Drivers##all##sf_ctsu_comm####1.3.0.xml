@@ -1,0 +1,139 @@
+<?xml version="1.0" ?>
+<synergyModuleDescription>
+   <!-- CTSU Tuning XML START here-->
+   <config id="config.framework.sf_ctsu_comm" path="ssp_cfg/framework/sf_ctsu_comm_cfg.h" version="0">
+        <property default="config.framework.sf_ctsu_comm.param_check.default" display="Parameter Checking" id="config.framework.sf_ctsu_comm.param_check">
+            <option display="Default(BSP)" id="config.framework.sf_ctsu_comm.param_check.default" value="BSP_CFG_PARAM_CHECKING_ENABLE"/>
+            <option display="Disabled" id="config.framework.sf_ctsu_comm.param_check.false" value="0"/>
+            <option display="Enabled" id="config.framework.sf_ctsu_comm.param_check.true" value="1"/>
+        </property>
+        
+        <property default="config.framework.sf_ctsu_comm.mode.monitor" display="Mode" id="config.framework.sf_ctsu_comm.mode">
+            <option display="Tuning" id="config.framework.sf_ctsu_comm.mode.tuning" value="1"/>
+            <option display="Monitor" id="config.framework.sf_ctsu_comm.mode.monitor" value="2"/>
+        </property>
+        
+        <property default="config.framework.sf_ctsu_comm.connection.usb" display="PC Connection Interface" id="config.framework.sf_ctsu_comm.connection">
+            <option display="Using Communication Frameworks" id="config.framework.sf_ctsu_comm.connection.usb" value="1"/>
+            <option display="Using SCI UART Driver" id="config.framework.sf_ctsu_comm.connection.sci" value="2"/>
+            <!--<option display="Debugger" id="config.framework.sf_ctsu_comm.connection.debugger" value="0"/>-->
+        </property>
+        <property default="2" display="Command Size Check count (Do Not Modify)" id="config.framework.sf_ctsu_comm.check_size">
+            <constraint display="Value must be a non-negative integer">testInteger("${config.framework.sf_ctsu_comm.check_size}")  &amp;&amp; ("${config.framework.sf_ctsu_comm.check_size}" &gt; 0)</constraint>
+        </property>
+        <property default="3" display="Command Header Size (Do Not Modify)" id="config.framework.sf_ctsu_comm.header_size">
+            <constraint display="Value must be a non-negative integer">testInteger("${config.framework.sf_ctsu_comm.header_size}")  &amp;&amp; ("${config.framework.sf_ctsu_comm.header_size}" &gt; 0)</constraint>
+        </property>
+        
+        
+        <property default="1" display="Thread Priority" id="config.framework.sf_ctsu_comm.priority">
+            <constraint display="Value must be a non-negative integer">testInteger("${config.framework.sf_ctsu_comm.priority}")  &amp;&amp; ("${config.framework.sf_ctsu_comm.priority}" &gt;= 0)</constraint>
+        </property>
+        <property default="1024" display="Host Communication Thread Stack Size" id="config.framework.sf_ctsu_comm.stack">
+            <constraint display="Value must be a non-negative integer">testInteger("${config.framework.sf_ctsu_comm.stack}")  &amp;&amp; ("${config.framework.sf_ctsu_comm.stack}" &gt; 0)</constraint>
+        </property>
+        <content>
+        
+        #define SF_CTSU_COMM_CFG_PARAM_CHECK      (${config.framework.sf_ctsu_comm.param_check})
+        
+        #define SF_CTSU_COMM_CFG_MODE_COMM      (1)
+        #define SF_CTSU_COMM_CFG_MODE_MONITOR     (2)
+        
+        #define SF_CTSU_COMM_CFG_MODE             (${config.framework.sf_ctsu_comm.mode})
+        
+        #define SF_CTSU_COMM_CFG_CONNECTION       (${config.framework.sf_ctsu_comm.connection})
+        
+        #define SF_CTSU_COMM_CFG_THREAD_PRIORITY  (${config.framework.sf_ctsu_comm.priority})
+        
+        #define SF_CTSU_COMM_CFG_THREAD_STACK_SIZE    (${config.framework.sf_ctsu_comm.stack})
+        
+        #define SF_CTSU_COMM_CFG_SCI_SIZE_CHECK_COUNT            (${config.framework.sf_ctsu_comm.check_size})
+        
+        #define SF_CTSU_COMM_CFG_SCI_BASE_DATA_SIZE              (${config.framework.sf_ctsu_comm.header_size})
+        
+        #define WORKBENCH_COMMAND_USE           (1)
+        </content>
+    </config>
+    
+    <module config="config.framework.sf_ctsu_comm" display="Framework|Input|${module.framework.sf_ctsu_comm.name} CTSU Communication Framework on sf_ctsu_comm_v2" common="100" id="module.framework.sf_ctsu_comm" version="1">
+        <constraint display="Unique name required for each instance">
+            "${interface.framework.sf_ctsu_comm.${module.framework.sf_ctsu_comm.name}}" === "1"
+        </constraint>
+        
+        <requires id="module.framework.sf_ctsu_comm.requires.ctsu" interface="interface.driver.ctsu_v2" display="Needs CTSU V2 HAL Driver">
+            <override property="module.driver.ctsu.data" value="module.driver.data.generated"/>
+        </requires>
+        <requires id="module.framework.sf_ctsu_comm.requires.touch" interface="interface.driver.touch" display="Needs TOUCH V2 Driver"/>
+        
+        <provides interface="interface.framework.sf_ctsu_comm" />
+        <provides interface="interface.framework.sf_ctsu_comm.${module.framework.sf_ctsu_comm.name}" />
+        <property default="g_sf_ctsu_comm${_instance}" display="Name" id="module.framework.sf_ctsu_comm.name">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_ctsu_comm.name}")</constraint>
+        </property>
+        <property default="${_instance}" display="Index (Do Not Modify)" id="module.framework.sf_ctsu_comm.count"> 
+            <constraint display="Value must be a non-negative integer">testInteger("${module.framework.sf_ctsu_comm.count}")  &amp;&amp; ("${module.framework.sf_ctsu_comm.count}" &gt;= 0) &amp;&amp; ("${module.framework.sf_ctsu_comm.count}" &lt; 8)</constraint>
+        </property>
+        <property default="g_sf_comms0" display="Communication Interface" id="module.framework.sf_ctsu_comm.comms">
+            <constraint display="Name must be a valid C symbol">testSymbol("${module.framework.sf_ctsu_comm.comms}")</constraint>
+        </property>
+        
+        
+        <header>
+        
+        extern sf_ctsu_comm_instance_t const ${module.framework.sf_ctsu_comm.name};
+        </header>
+        <includes>
+        #include &quot;sf_ctsu_comm_cfg.h&quot;
+        #include &quot;sf_ctsu_comm.h&quot;
+        #if (SF_CTSU_COMM_CFG_CONNECTION==2)
+        #include &quot;r_uart_api.h&quot;
+        #elif (SF_CTSU_COMM_CFG_CONNECTION==1)
+        #include &quot;sf_comms_api.h&quot;
+        #endif
+        </includes>
+        <declarations>
+        
+        #if (SF_CTSU_COMM_CFG_CONNECTION==2)
+        extern uart_instance_t const ${module.framework.sf_ctsu_comm.comms};
+        #else
+        extern sf_comms_instance_t const ${module.framework.sf_ctsu_comm.comms};
+        #endif
+        
+        sf_ctsu_comm_instance_ctrl_t ${module.framework.sf_ctsu_comm.name}_ctrl;
+        
+        sf_ctsu_comm_cfg_t ${module.framework.sf_ctsu_comm.name}_cfg =
+        {
+            .index = ${module.framework.sf_ctsu_comm.count},
+        #if (SF_CTSU_COMM_CFG_CONNECTION > 0)
+            .p_comms = &amp;${module.framework.sf_ctsu_comm.comms},
+        #else
+            .p_comms = NULL,
+        #endif
+            .p_ctsu = &amp;${module.framework.sf_ctsu_comm.requires.ctsu::module.driver.ctsu.name},
+        #if (SF_CTSU_COMM_CFG_MODE==SF_CTSU_COMM_CFG_MODE_MONITOR)
+            .p_touch = &amp;${module.framework.sf_ctsu_comm.requires.touch::module.driver.touch.name},
+        #elif(SF_CTSU_COMM_CFG_MODE==SF_CTSU_COMM_CFG_MODE_COMM)
+            .p_touch = NULL,
+        #endif
+        };
+        
+        sf_ctsu_comm_instance_t const ${module.framework.sf_ctsu_comm.name} = 
+        {
+            .p_ctrl = &amp;${module.framework.sf_ctsu_comm.name}_ctrl,
+            .p_api = &amp;g_ctsu_comm_api,
+            .p_cfg = &amp;${module.framework.sf_ctsu_comm.name}_cfg,
+        };
+        
+        </declarations>
+        <init>
+        <!-- ssp_err_t ssp_err_${module.framework.sf_ctsu_comm.name}; -->
+        <!-- ssp_err_${module.framework.sf_ctsu_comm.name} = ${module.framework.sf_ctsu_comm.name}.p_api->open(${module.framework.sf_ctsu_comm.name}.p_ctrl, ${module.framework.sf_ctsu_comm.name}.p_cfg); -->
+        <!-- if (SSP_SUCCESS != ssp_err_${module.framework.sf_ctsu_comm.name}) -->
+        <!-- { -->
+            <!-- BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0); -->
+        <!-- } -->
+        </init>
+    </module>
+    <!-- CTSU Tuning XML END here-->
+    
+</synergyModuleDescription>

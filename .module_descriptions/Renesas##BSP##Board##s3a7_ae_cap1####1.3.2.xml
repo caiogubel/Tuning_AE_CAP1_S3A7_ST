@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<synergyModuleDescription>
+  <config id="config.board.s3a7_ae_cap1" path="ssp_cfg/bsp/bsp_board_cfg.h" version="0">
+    <content>#include "../../../synergy/board/s3a7_ae_cap1/bsp.h"</content>
+  </config>
+  <board config="config.board.s3a7_ae_cap1" device="R7FS3A77C3A01CFB" display="S3A7 AE-CAP1" id="board.s3a7_ae_cap1" version="0"/>
+</synergyModuleDescription>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<synergyModuleDescription>
+  <config id="config.board.s124_ae_cap1" path="ssp_cfg/bsp/bsp_board_cfg.h" version="0">
+    <content>#include "../../../synergy/board/s124_ae_cap1/bsp.h"</content>
+  </config>
+  <board config="config.board.s124_ae_cap1" device="R7FS124773A01CFM" display="S124 AE-CAP1" id="board.s124_ae_cap1" version="0"/>
+</synergyModuleDescription>
